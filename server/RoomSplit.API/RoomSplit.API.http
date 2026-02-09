@@ -1,0 +1,6 @@
+@RoomSplit.API_HostAddress = http://localhost:5147
+
+GET {{RoomSplit.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

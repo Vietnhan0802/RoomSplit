@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build
+client/dist/
+server/**/bin/
+server/**/obj/
+
+# Environment
+.env
+.env.local
+.env.*.local
+client/.env
+server/RoomSplit.API/.env
+
+# IDE
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads (keep folder structure, ignore files)
+uploads/receipts/*
+uploads/avatars/*
+!uploads/receipts/.gitkeep
+!uploads/avatars/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# .NET
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# TypeScript
+*.tsbuildinfo

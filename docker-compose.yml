@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: roomsplit-db
+    environment:
+      POSTGRES_DB: roomsplit
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Uncomment to run backend in Docker
+  # api:
+  #   build:
+  #     context: ./server
+  #     dockerfile: Dockerfile
+  #   container_name: roomsplit-api
+  #   ports:
+  #     - "5000:8080"
+  #   environment:
+  #     - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=roomsplit;Username=postgres;Password=postgres
+  #     - Jwt__Secret=RoomSplitSuperSecretKeyAtLeast32Characters!
+  #     - Jwt__Issuer=RoomSplit
+  #     - Jwt__Audience=RoomSplitClient
+  #   depends_on:
+  #     - postgres
+
+volumes:
+  postgres_data:
