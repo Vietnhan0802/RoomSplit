@@ -55,7 +55,7 @@ public class RoomsController : ControllerBase
         {
             RoomId = room.Id,
             UserId = userId,
-            Role = RoomRole.Admin
+            Role = RoomRole.Owner
         };
         await _unitOfWork.RoomMembers.AddAsync(member);
         await _unitOfWork.SaveChangesAsync();
@@ -68,7 +68,7 @@ public class RoomsController : ControllerBase
     public async Task<ActionResult<ApiResponse<RoomDto>>> JoinRoom(string inviteCode)
     {
         var userId = GetUserId();
-        var rooms = await _unitOfWork.Rooms.FindAsync(r => r.InviteCode == inviteCode && r.IsActive);
+        var rooms = await _unitOfWork.Rooms.FindAsync(r => r.InviteCode == inviteCode);
         var room = rooms.FirstOrDefault();
 
         if (room == null)
@@ -95,6 +95,6 @@ public class RoomsController : ControllerBase
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         var random = new Random();
-        return new string(Enumerable.Range(0, 6).Select(_ => chars[random.Next(chars.Length)]).ToArray());
+        return new string(Enumerable.Range(0, 8).Select(_ => chars[random.Next(chars.Length)]).ToArray());
     }
 }

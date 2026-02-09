@@ -5,8 +5,8 @@ public record CreateExpenseDto(
     decimal Amount,
     int Category,
     int SplitType,
-    DateTime ExpenseDate,
+    DateTime Date,
     string? Note,
     List<ExpenseSplitInputDto>? Splits);
 
-public record ExpenseSplitInputDto(Guid UserId, decimal? Amount, decimal? Percentage);
+public record ExpenseSplitInputDto(Guid UserId, decimal? Amount);

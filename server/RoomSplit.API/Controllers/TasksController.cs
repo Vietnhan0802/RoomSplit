@@ -1,3 +1,4 @@
+using System.Text.Json;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,23 +30,28 @@ public class TasksController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ApiResponse<List<TaskDto>>>> GetTasks(Guid roomId)
     {
-        var tasks = await _unitOfWork.RoomTasks.FindAsync(t => t.RoomId == roomId && t.IsActive);
+        var tasks = await _unitOfWork.TaskTemplates.GetByRoomIdAsync(roomId);
         return Ok(ApiResponse<List<TaskDto>>.Ok(_mapper.Map<List<TaskDto>>(tasks)));
     }
 
     [HttpPost]
     public async Task<ActionResult<ApiResponse<TaskDto>>> CreateTask(Guid roomId, CreateTaskDto dto)
     {
-        var task = new RoomTask
+        var userId = GetUserId();
+        var task = new TaskTemplate
         {
             RoomId = roomId,
             Title = dto.Title,
             Description = dto.Description,
-            Frequency = (TaskFrequency)dto.Frequency,
-            IsRotating = dto.IsRotating
+            Icon = dto.Icon,
+            FrequencyType = (TaskFrequency)dto.FrequencyType,
+            FrequencyValue = dto.FrequencyValue,
+            RotationOrder = JsonSerializer.Serialize(dto.RotationOrder),
+            StartDate = dto.StartDate,
+            CreatedByUserId = userId
         };
 
-        await _unitOfWork.RoomTasks.AddAsync(task);
+        await _unitOfWork.TaskTemplates.AddAsync(task);
         await _unitOfWork.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetTasks), new { roomId },
@@ -57,7 +63,7 @@ public class TasksController : ControllerBase
     {
         var userId = GetUserId();
         var assignments = await _unitOfWork.TaskAssignments.FindAsync(
-            a => a.RoomTaskId == taskId && a.AssignedToUserId == userId
+            a => a.TaskTemplateId == taskId && a.AssignedToUserId == userId
                 && a.Status == TaskCompletionStatus.Pending);
 
         var assignment = assignments.FirstOrDefault();
@@ -66,6 +72,7 @@ public class TasksController : ControllerBase
 
         assignment.Status = TaskCompletionStatus.Completed;
         assignment.CompletedAt = DateTime.UtcNow;
+        assignment.CompletedByUserId = userId;
         await _unitOfWork.TaskAssignments.UpdateAsync(assignment);
         await _unitOfWork.SaveChangesAsync();
 

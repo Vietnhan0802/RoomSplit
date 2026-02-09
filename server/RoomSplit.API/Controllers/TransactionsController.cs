@@ -31,32 +31,37 @@ public class TransactionsController : ControllerBase
         [FromQuery] int? month, [FromQuery] int? year)
     {
         var userId = GetUserId();
-        var transactions = await _unitOfWork.Transactions.FindAsync(t => t.UserId == userId);
 
         if (month.HasValue && year.HasValue)
         {
-            transactions = transactions.Where(
-                t => t.TransactionDate.Month == month && t.TransactionDate.Year == year);
+            var from = new DateTime(year.Value, month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
+            var to = from.AddMonths(1).AddTicks(-1);
+            var filtered = await _unitOfWork.Transactions.GetByUserIdAndDateRangeAsync(userId, from, to);
+            return Ok(ApiResponse<List<TransactionDto>>.Ok(_mapper.Map<List<TransactionDto>>(filtered)));
         }
 
-        var dtos = _mapper.Map<List<TransactionDto>>(
-            transactions.OrderByDescending(t => t.TransactionDate));
-        return Ok(ApiResponse<List<TransactionDto>>.Ok(dtos));
+        var transactions = await _unitOfWork.Transactions.GetByUserIdAsync(userId);
+        return Ok(ApiResponse<List<TransactionDto>>.Ok(_mapper.Map<List<TransactionDto>>(transactions)));
     }
 
     [HttpPost]
     public async Task<ActionResult<ApiResponse<TransactionDto>>> CreateTransaction(CreateTransactionDto dto)
     {
         var userId = GetUserId();
+        var transactionType = (TransactionType)dto.Type;
+
         var transaction = new Transaction
         {
             UserId = userId,
-            Type = (TransactionType)dto.Type,
+            Type = transactionType,
             Amount = dto.Amount,
-            Category = (TransactionCategory)dto.Category,
             Description = dto.Description,
-            TransactionDate = dto.TransactionDate,
-            Note = dto.Note
+            IncomeCategory = dto.IncomeCategory.HasValue ? (IncomeCategory)dto.IncomeCategory.Value : null,
+            ExpenseCategory = dto.ExpenseCategory.HasValue ? (ExpenseCategory)dto.ExpenseCategory.Value : null,
+            Date = dto.Date,
+            ImageUrl = dto.ImageUrl,
+            Note = dto.Note,
+            Tags = dto.Tags
         };
 
         await _unitOfWork.Transactions.AddAsync(transaction);

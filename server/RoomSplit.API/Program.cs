@@ -35,8 +35,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// DI
+// DI - Repositories
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ISharedExpenseRepository, SharedExpenseRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+
+// DI - Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFileService, FileService>();
 
@@ -99,12 +104,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Auto-migrate in development
+// Auto-migrate and seed in development
 if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
+    await DbSeeder.SeedAsync(db);
 }
 
 app.Run();

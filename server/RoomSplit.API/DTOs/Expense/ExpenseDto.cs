@@ -8,12 +8,11 @@ public record ExpenseDto(
     decimal Amount,
     string Category,
     string SplitType,
-    DateTime ExpenseDate,
-    string? ReceiptUrl,
+    DateTime Date,
+    string? ReceiptImageUrl,
     string? Note,
-    bool IsSettled,
     UserDto PaidBy,
     List<ExpenseSplitDto> Splits,
     DateTime CreatedAt);
 
-public record ExpenseSplitDto(Guid Id, UserDto User, decimal Amount, decimal? Percentage, bool IsPaid);
+public record ExpenseSplitDto(Guid Id, UserDto User, decimal Amount, bool IsSettled, DateTime? SettledAt);

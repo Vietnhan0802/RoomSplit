@@ -12,12 +12,14 @@ public class UnitOfWork : IUnitOfWork
     public IRepository<User> Users { get; }
     public IRepository<Room> Rooms { get; }
     public IRepository<RoomMember> RoomMembers { get; }
-    public IRepository<Expense> Expenses { get; }
+    public ISharedExpenseRepository SharedExpenses { get; }
     public IRepository<ExpenseSplit> ExpenseSplits { get; }
-    public IRepository<RoomTask> RoomTasks { get; }
+    public IRepository<Settlement> Settlements { get; }
+    public ITaskRepository TaskTemplates { get; }
     public IRepository<TaskAssignment> TaskAssignments { get; }
-    public IRepository<Transaction> Transactions { get; }
+    public ITransactionRepository Transactions { get; }
     public IRepository<Budget> Budgets { get; }
+    public IRepository<TransactionImage> TransactionImages { get; }
 
     public UnitOfWork(AppDbContext context)
     {
@@ -25,12 +27,14 @@ public class UnitOfWork : IUnitOfWork
         Users = new Repository<User>(context);
         Rooms = new Repository<Room>(context);
         RoomMembers = new Repository<RoomMember>(context);
-        Expenses = new Repository<Expense>(context);
+        SharedExpenses = new SharedExpenseRepository(context);
         ExpenseSplits = new Repository<ExpenseSplit>(context);
-        RoomTasks = new Repository<RoomTask>(context);
+        Settlements = new Repository<Settlement>(context);
+        TaskTemplates = new TaskRepository(context);
         TaskAssignments = new Repository<TaskAssignment>(context);
-        Transactions = new Repository<Transaction>(context);
+        Transactions = new TransactionRepository(context);
         Budgets = new Repository<Budget>(context);
+        TransactionImages = new Repository<TransactionImage>(context);
     }
 
     public async Task<int> SaveChangesAsync()

@@ -1,14 +1,15 @@
 namespace RoomSplit.Core.Entities;
 
-public class ExpenseSplit : BaseEntity
+public class ExpenseSplit : IEntity
 {
-    public Guid ExpenseId { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid SharedExpenseId { get; set; }
     public Guid UserId { get; set; }
     public decimal Amount { get; set; }
-    public decimal? Percentage { get; set; }
-    public bool IsPaid { get; set; } = false;
+    public bool IsSettled { get; set; } = false;
+    public DateTime? SettledAt { get; set; }
 
     // Navigation properties
-    public Expense Expense { get; set; } = null!;
+    public SharedExpense SharedExpense { get; set; } = null!;
     public User User { get; set; } = null!;
 }

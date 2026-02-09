@@ -34,15 +34,16 @@ public class BudgetsController : ControllerBase
         var budgets = await _unitOfWork.Budgets.FindAsync(
             b => b.UserId == userId && b.Month == month && b.Year == year);
 
-        var transactions = await _unitOfWork.Transactions.FindAsync(
-            t => t.UserId == userId && t.Type == TransactionType.Expense
-                && t.TransactionDate.Month == month && t.TransactionDate.Year == year);
+        var from = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var to = from.AddMonths(1).AddTicks(-1);
+        var transactions = await _unitOfWork.Transactions.GetByUserIdAndDateRangeAsync(userId, from, to);
+        var expenseTransactions = transactions.Where(t => t.Type == TransactionType.Expense).ToList();
 
         var dtos = budgets.Select(b =>
         {
             var dto = _mapper.Map<BudgetDto>(b);
-            var spent = transactions
-                .Where(t => t.Category == b.Category)
+            var spent = expenseTransactions
+                .Where(t => t.ExpenseCategory == b.ExpenseCategory)
                 .Sum(t => t.Amount);
             return dto with { SpentAmount = spent };
         }).ToList();
@@ -57,8 +58,8 @@ public class BudgetsController : ControllerBase
         var budget = new Budget
         {
             UserId = userId,
-            Category = (TransactionCategory)dto.Category,
-            LimitAmount = dto.LimitAmount,
+            ExpenseCategory = (ExpenseCategory)dto.ExpenseCategory,
+            MonthlyLimit = dto.MonthlyLimit,
             Month = dto.Month,
             Year = dto.Year
         };

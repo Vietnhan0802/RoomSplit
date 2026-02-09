@@ -29,8 +29,8 @@ public class ExpensesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ApiResponse<List<ExpenseDto>>>> GetExpenses(Guid roomId)
     {
-        var expenses = await _unitOfWork.Expenses.FindAsync(e => e.RoomId == roomId);
-        var dtos = _mapper.Map<List<ExpenseDto>>(expenses.OrderByDescending(e => e.ExpenseDate));
+        var expenses = await _unitOfWork.SharedExpenses.GetByRoomIdAsync(roomId);
+        var dtos = _mapper.Map<List<ExpenseDto>>(expenses);
         return Ok(ApiResponse<List<ExpenseDto>>.Ok(dtos));
     }
 
@@ -38,19 +38,19 @@ public class ExpensesController : ControllerBase
     public async Task<ActionResult<ApiResponse<ExpenseDto>>> CreateExpense(Guid roomId, CreateExpenseDto dto)
     {
         var userId = GetUserId();
-        var expense = new Expense
+        var expense = new SharedExpense
         {
             RoomId = roomId,
             PaidByUserId = userId,
             Description = dto.Description,
             Amount = dto.Amount,
-            Category = (ExpenseCategory)dto.Category,
+            Category = (SharedExpenseCategory)dto.Category,
             SplitType = (SplitType)dto.SplitType,
-            ExpenseDate = dto.ExpenseDate,
+            Date = dto.Date,
             Note = dto.Note
         };
 
-        await _unitOfWork.Expenses.AddAsync(expense);
+        await _unitOfWork.SharedExpenses.AddAsync(expense);
 
         if (dto.SplitType == (int)SplitType.Equal)
         {
@@ -62,10 +62,10 @@ public class ExpensesController : ControllerBase
             {
                 var split = new ExpenseSplit
                 {
-                    ExpenseId = expense.Id,
+                    SharedExpenseId = expense.Id,
                     UserId = member.UserId,
                     Amount = splitAmount,
-                    IsPaid = member.UserId == userId
+                    IsSettled = member.UserId == userId
                 };
                 await _unitOfWork.ExpenseSplits.AddAsync(split);
             }
@@ -76,11 +76,10 @@ public class ExpensesController : ControllerBase
             {
                 var split = new ExpenseSplit
                 {
-                    ExpenseId = expense.Id,
+                    SharedExpenseId = expense.Id,
                     UserId = s.UserId,
                     Amount = s.Amount ?? 0,
-                    Percentage = s.Percentage,
-                    IsPaid = s.UserId == userId
+                    IsSettled = s.UserId == userId
                 };
                 await _unitOfWork.ExpenseSplits.AddAsync(split);
             }

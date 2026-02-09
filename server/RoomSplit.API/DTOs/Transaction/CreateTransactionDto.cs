@@ -3,7 +3,10 @@ namespace RoomSplit.API.DTOs.Transaction;
 public record CreateTransactionDto(
     int Type,
     decimal Amount,
-    int Category,
-    string? Description,
-    DateTime TransactionDate,
-    string? Note);
+    string Description,
+    int? IncomeCategory,
+    int? ExpenseCategory,
+    DateTime Date,
+    string? ImageUrl,
+    string? Note,
+    string? Tags);

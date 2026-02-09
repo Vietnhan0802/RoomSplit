@@ -6,7 +6,7 @@ using RoomSplit.Infrastructure.Data;
 
 namespace RoomSplit.Infrastructure.Repositories;
 
-public class Repository<T> : IRepository<T> where T : BaseEntity
+public class Repository<T> : IRepository<T> where T : class, IEntity
 {
     protected readonly AppDbContext _context;
     protected readonly DbSet<T> _dbSet;
@@ -32,10 +32,20 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         return await _dbSet.Where(predicate).ToListAsync();
     }
 
+    public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _dbSet.FirstOrDefaultAsync(predicate);
+    }
+
     public async Task<T> AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
         return entity;
+    }
+
+    public async Task AddRangeAsync(IEnumerable<T> entities)
+    {
+        await _dbSet.AddRangeAsync(entities);
     }
 
     public Task UpdateAsync(T entity)
@@ -53,5 +63,17 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
     public async Task<bool> ExistsAsync(Guid id)
     {
         return await _dbSet.AnyAsync(e => e.Id == id);
+    }
+
+    public async Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null)
+    {
+        return predicate == null
+            ? await _dbSet.CountAsync()
+            : await _dbSet.CountAsync(predicate);
+    }
+
+    public IQueryable<T> Query()
+    {
+        return _dbSet.AsQueryable();
     }
 }

@@ -35,8 +35,7 @@ public class AuthController : ControllerBase
         {
             FullName = dto.FullName,
             Email = dto.Email,
-            PasswordHash = _authService.HashPassword(dto.Password),
-            Phone = dto.Phone
+            PasswordHash = _authService.HashPassword(dto.Password)
         };
 
         await _unitOfWork.Users.AddAsync(user);

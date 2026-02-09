@@ -6,9 +6,12 @@ public record TaskDto(
     Guid Id,
     string Title,
     string? Description,
-    string Frequency,
-    bool IsRotating,
-    int CurrentRotationIndex,
+    string? Icon,
+    string FrequencyType,
+    int FrequencyValue,
+    int CurrentAssigneeIndex,
+    DateTime StartDate,
+    bool IsActive,
     List<TaskAssignmentDto> Assignments,
     DateTime CreatedAt);
 
@@ -17,4 +20,7 @@ public record TaskAssignmentDto(
     UserDto AssignedTo,
     DateTime DueDate,
     string Status,
-    DateTime? CompletedAt);
+    DateTime? CompletedAt,
+    UserDto? CompletedBy,
+    string? Note,
+    string? ProofImageUrl);
