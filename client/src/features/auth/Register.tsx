@@ -13,8 +13,12 @@ import { ROUTES } from '../../constants';
 const schema = z.object({
   fullName: z.string().min(1, 'Vui lòng nhập họ tên').max(100),
   email: z.string().email('Email không hợp lệ'),
-  password: z.string().min(6, 'Mật khẩu tối thiểu 6 ký tự'),
+  password: z.string().min(8, 'Mật khẩu tối thiểu 8 ký tự'),
+  confirmPassword: z.string().min(1, 'Vui lòng xác nhận mật khẩu'),
   phone: z.string().optional(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Mật khẩu không khớp',
+  path: ['confirmPassword'],
 });
 
 type RegisterData = z.infer<typeof schema>;
@@ -33,12 +37,13 @@ export default function Register() {
       setIsLoading(true);
       const res = await authApi.register(data);
       if (res.data.data) {
-        login(res.data.data.token, res.data.data.user);
+        login(res.data.data.token, res.data.data.refreshToken, res.data.data.user);
         navigate(ROUTES.DASHBOARD);
         showToast('success', 'Đăng ký thành công!');
       }
-    } catch {
-      showToast('error', 'Email đã được sử dụng');
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Email đã được sử dụng';
+      showToast('error', message);
     } finally {
       setIsLoading(false);
     }
@@ -58,6 +63,7 @@ export default function Register() {
             <Input label="Email" type="email" {...register('email')} error={errors.email?.message} />
             <Input label="Số điện thoại" type="tel" {...register('phone')} />
             <Input label="Mật khẩu" type="password" {...register('password')} error={errors.password?.message} />
+            <Input label="Xác nhận mật khẩu" type="password" {...register('confirmPassword')} error={errors.confirmPassword?.message} />
 
             <Button type="submit" className="w-full" isLoading={isLoading}>
               Đăng ký

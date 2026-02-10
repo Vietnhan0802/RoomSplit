@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<Transaction> Transactions => Set<Transaction>();
     public DbSet<Budget> Budgets => Set<Budget>();
     public DbSet<TransactionImage> TransactionImages => Set<TransactionImage>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -225,6 +226,23 @@ public class AppDbContext : DbContext
             entity.HasOne(ti => ti.Transaction)
                 .WithMany(t => t.Images)
                 .HasForeignKey(ti => ti.TransactionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ====== REFRESH TOKEN ======
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(rt => rt.Id);
+            entity.HasIndex(rt => rt.Token).IsUnique();
+            entity.Property(rt => rt.Token).IsRequired().HasMaxLength(500);
+            entity.Property(rt => rt.CreatedByIp).IsRequired().HasMaxLength(45);
+            entity.Property(rt => rt.RevokedByIp).HasMaxLength(45);
+            entity.Property(rt => rt.RevokedReason).HasMaxLength(200);
+            entity.Property(rt => rt.ReplacedByToken).HasMaxLength(500);
+
+            entity.HasOne(rt => rt.User)
+                .WithMany()
+                .HasForeignKey(rt => rt.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

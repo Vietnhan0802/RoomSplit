@@ -43,6 +43,7 @@ builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 
 // DI - Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IFileService, FileService>();
 
 // AutoMapper
@@ -79,6 +80,8 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Middleware
+app.UseMiddleware<RequestResponseLoggingMiddleware>();
+app.UseMiddleware<RateLimitingMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())

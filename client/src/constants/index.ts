@@ -65,6 +65,7 @@ export const ROUTES = {
   CALENDAR: '/finance/calendar',
   BUDGETS: '/finance/budgets',
   REPORTS: '/reports',
+  PROFILE: '/profile',
 } as const;
 
 export const CATEGORY_COLORS: Record<string, string> = {

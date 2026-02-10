@@ -15,6 +15,7 @@ import TransactionList from '../features/finance/transactions/TransactionList';
 import CalendarView from '../features/finance/calendar/CalendarView';
 import BudgetList from '../features/finance/budgets/BudgetList';
 import Reports from '../features/reports/Reports';
+import Profile from '../features/profile/Profile';
 
 export default function AppRouter() {
   return (
@@ -51,6 +52,7 @@ export default function AppRouter() {
           </Route>
 
           <Route path="/reports" element={<Reports />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
 
         {/* Redirect */}

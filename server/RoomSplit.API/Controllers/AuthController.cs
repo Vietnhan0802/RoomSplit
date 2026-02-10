@@ -42,9 +42,10 @@ public class AuthController : ControllerBase
         await _unitOfWork.SaveChangesAsync();
 
         var token = _authService.GenerateJwtToken(user);
+        var refreshToken = await _authService.CreateRefreshTokenAsync(user, GetClientIpAddress());
         var userDto = _mapper.Map<UserDto>(user);
 
-        return Ok(ApiResponse<AuthResponseDto>.Ok(new AuthResponseDto(token, userDto)));
+        return Ok(ApiResponse<AuthResponseDto>.Ok(new AuthResponseDto(token, refreshToken.Token, userDto)));
     }
 
     [HttpPost("login")]
@@ -57,9 +58,10 @@ public class AuthController : ControllerBase
             return Unauthorized(ApiResponse<AuthResponseDto>.Fail("Invalid email or password."));
 
         var token = _authService.GenerateJwtToken(user);
+        var refreshToken = await _authService.CreateRefreshTokenAsync(user, GetClientIpAddress());
         var userDto = _mapper.Map<UserDto>(user);
 
-        return Ok(ApiResponse<AuthResponseDto>.Ok(new AuthResponseDto(token, userDto)));
+        return Ok(ApiResponse<AuthResponseDto>.Ok(new AuthResponseDto(token, refreshToken.Token, userDto)));
     }
 
     [Authorize]
@@ -73,5 +75,66 @@ public class AuthController : ControllerBase
             return NotFound(ApiResponse<UserDto>.Fail("User not found."));
 
         return Ok(ApiResponse<UserDto>.Ok(_mapper.Map<UserDto>(user)));
+    }
+
+    [HttpPost("refresh")]
+    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Refresh(RefreshTokenDto dto)
+    {
+        try
+        {
+            var (accessToken, newRefreshToken) = await _authService
+                .RefreshTokenAsync(dto.RefreshToken, GetClientIpAddress());
+
+            // Get user from refresh token
+            var validatedToken = await _authService.ValidateRefreshTokenAsync(newRefreshToken);
+            if (validatedToken == null)
+                return Unauthorized(ApiResponse<AuthResponseDto>
+                    .Fail("Invalid refresh token."));
+
+            var user = await _unitOfWork.Users.GetByIdAsync(validatedToken.UserId);
+            if (user == null)
+                return Unauthorized(ApiResponse<AuthResponseDto>
+                    .Fail("User not found."));
+
+            var userDto = _mapper.Map<UserDto>(user);
+            return Ok(ApiResponse<AuthResponseDto>.Ok(
+                new AuthResponseDto(accessToken, newRefreshToken, userDto)));
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(ApiResponse<AuthResponseDto>.Fail(ex.Message));
+        }
+    }
+
+    [Authorize]
+    [HttpPut("profile")]
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<ApiResponse<UserDto>>> UpdateProfile(
+        [FromForm] UpdateProfileDto dto,
+        [FromForm] IFormFile? avatar)
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var user = await _unitOfWork.Users.GetByIdAsync(userId);
+
+        if (user == null)
+            return NotFound(ApiResponse<UserDto>.Fail("User not found."));
+
+        await _authService.UpdateProfileAsync(user, dto.FullName, avatar);
+
+        return Ok(ApiResponse<UserDto>.Ok(_mapper.Map<UserDto>(user)));
+    }
+
+    private string GetClientIpAddress()
+    {
+        var ipAddress = HttpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+        if (string.IsNullOrEmpty(ipAddress))
+        {
+            ipAddress = HttpContext.Request.Headers["X-Real-IP"].FirstOrDefault();
+        }
+        if (string.IsNullOrEmpty(ipAddress))
+        {
+            ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+        }
+        return ipAddress ?? "unknown";
     }
 }

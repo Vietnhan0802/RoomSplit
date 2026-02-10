@@ -9,4 +9,12 @@ export const authApi = {
     apiClient.post<ApiResponse<AuthResponse>>('/auth/login', data),
 
   getMe: () => apiClient.get<ApiResponse<User>>('/auth/me'),
+
+  refresh: (refreshToken: string) =>
+    apiClient.post<ApiResponse<AuthResponse>>('/auth/refresh', { refreshToken }),
+
+  updateProfile: (data: FormData) =>
+    apiClient.put<ApiResponse<User>>('/auth/profile', data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
 };

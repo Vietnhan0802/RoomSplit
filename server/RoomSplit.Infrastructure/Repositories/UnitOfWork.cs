@@ -20,6 +20,7 @@ public class UnitOfWork : IUnitOfWork
     public ITransactionRepository Transactions { get; }
     public IRepository<Budget> Budgets { get; }
     public IRepository<TransactionImage> TransactionImages { get; }
+    public IRepository<RefreshToken> RefreshTokens { get; }
 
     public UnitOfWork(AppDbContext context)
     {
@@ -35,6 +36,7 @@ public class UnitOfWork : IUnitOfWork
         Transactions = new TransactionRepository(context);
         Budgets = new Repository<Budget>(context);
         TransactionImages = new Repository<TransactionImage>(context);
+        RefreshTokens = new Repository<RefreshToken>(context);
     }
 
     public async Task<int> SaveChangesAsync()

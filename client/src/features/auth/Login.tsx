@@ -31,11 +31,12 @@ export default function Login() {
       setIsLoading(true);
       const res = await authApi.login(data);
       if (res.data.data) {
-        login(res.data.data.token, res.data.data.user);
+        login(res.data.data.token, res.data.data.refreshToken, res.data.data.user);
         navigate(ROUTES.DASHBOARD);
       }
-    } catch {
-      showToast('error', 'Email hoặc mật khẩu không đúng');
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Email hoặc mật khẩu không đúng';
+      showToast('error', message);
     } finally {
       setIsLoading(false);
     }

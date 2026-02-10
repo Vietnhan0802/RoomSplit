@@ -15,5 +15,6 @@ public interface IUnitOfWork : IDisposable
     ITransactionRepository Transactions { get; }
     IRepository<Budget> Budgets { get; }
     IRepository<TransactionImage> TransactionImages { get; }
+    IRepository<RefreshToken> RefreshTokens { get; }
     Task<int> SaveChangesAsync();
 }
