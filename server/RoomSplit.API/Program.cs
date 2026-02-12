@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using RoomSplit.API.Mappings;
 using RoomSplit.API.Middlewares;
 using RoomSplit.Core.Interfaces;
+using RoomSplit.Infrastructure.BackgroundJobs;
 using RoomSplit.Infrastructure.Data;
 using RoomSplit.Infrastructure.Repositories;
 using RoomSplit.Infrastructure.Services;
@@ -45,6 +46,11 @@ builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
+
+// Background Services
+builder.Services.AddHostedService<TaskGenerationHostedService>();
+builder.Services.AddHostedService<OverdueDetectionHostedService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));

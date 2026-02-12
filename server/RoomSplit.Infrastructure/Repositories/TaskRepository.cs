@@ -57,4 +57,79 @@ public class TaskRepository : Repository<TaskTemplate>, ITaskRepository
             .OrderByDescending(a => a.DueDate)
             .ToListAsync();
     }
+
+    public async Task<IEnumerable<TaskTemplate>> GetActiveTemplatesAsync()
+    {
+        return await _dbSet
+            .Where(t => t.IsActive)
+            .Include(t => t.CreatedBy)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<TaskAssignment>> GetAssignmentsByDateRangeAsync(
+        Guid roomId,
+        DateTime startDate,
+        DateTime endDate,
+        Guid? assignedToUserId = null,
+        TaskCompletionStatus? status = null)
+    {
+        var query = _context.TaskAssignments
+            .Where(a => a.RoomId == roomId && a.DueDate >= startDate && a.DueDate <= endDate);
+
+        if (assignedToUserId.HasValue)
+            query = query.Where(a => a.AssignedToUserId == assignedToUserId.Value);
+
+        if (status.HasValue)
+            query = query.Where(a => a.Status == status.Value);
+
+        return await query
+            .Include(a => a.TaskTemplate)
+            .Include(a => a.AssignedTo)
+            .Include(a => a.CompletedBy)
+            .OrderBy(a => a.DueDate)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<TaskAssignment>> GetTodayAssignmentsAsync(Guid roomId, DateTime today)
+    {
+        var startOfDay = today.Date;
+        var endOfDay = startOfDay.AddDays(1).AddTicks(-1);
+
+        return await _context.TaskAssignments
+            .Where(a => a.RoomId == roomId && a.DueDate >= startOfDay && a.DueDate <= endOfDay)
+            .Include(a => a.TaskTemplate)
+            .Include(a => a.AssignedTo)
+            .Include(a => a.CompletedBy)
+            .OrderBy(a => a.Status)
+            .ThenBy(a => a.AssignedTo!.DisplayName)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<TaskAssignment>> GetMyAssignmentsAsync(Guid roomId, Guid userId)
+    {
+        return await _context.TaskAssignments
+            .Where(a => a.RoomId == roomId && a.AssignedToUserId == userId)
+            .Include(a => a.TaskTemplate)
+            .Include(a => a.AssignedTo)
+            .OrderBy(a => a.DueDate)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<TaskAssignment>> GetPendingOverdueAsync(DateTime currentDate)
+    {
+        return await _context.TaskAssignments
+            .Where(a => a.Status == TaskCompletionStatus.Pending && a.DueDate < currentDate)
+            .Include(a => a.TaskTemplate)
+            .Include(a => a.AssignedTo)
+            .ToListAsync();
+    }
+
+    public async Task DeleteFutureAssignmentsAsync(Guid taskTemplateId, DateTime fromDate)
+    {
+        var futureAssignments = await _context.TaskAssignments
+            .Where(a => a.TaskTemplateId == taskTemplateId && a.DueDate >= fromDate)
+            .ToListAsync();
+
+        _context.TaskAssignments.RemoveRange(futureAssignments);
+    }
 }
