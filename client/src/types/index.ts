@@ -103,38 +103,120 @@ export interface TaskAssignment {
 // Transaction
 export type TransactionType = 'Income' | 'Expense';
 
-export type TransactionCategory =
-  | 'Salary'
-  | 'Food'
-  | 'Transport'
-  | 'Shopping'
-  | 'Entertainment'
-  | 'Health'
-  | 'Education'
-  | 'Bills'
-  | 'RoomExpense'
-  | 'Savings'
-  | 'Other';
+export type ExpenseCategoryKey =
+  | 'Food' | 'Transport' | 'Entertainment' | 'Shopping'
+  | 'Health' | 'Education' | 'Sports' | 'Bills'
+  | 'Rent' | 'Coffee' | 'PersonalCare' | 'Other';
+
+export type IncomeCategoryKey =
+  | 'Salary' | 'Bonus' | 'Freelance' | 'Gift'
+  | 'Refund' | 'Investment' | 'Other';
+
+export type TransactionCategory = ExpenseCategoryKey | IncomeCategoryKey;
+
+export interface TransactionImage {
+  id: string;
+  imageUrl: string;
+  thumbnailUrl?: string;
+  originalFileName: string;
+  fileSize: number;
+  uploadedAt: string;
+}
 
 export interface Transaction {
   id: string;
   type: TransactionType;
   amount: number;
-  category: TransactionCategory;
-  description?: string;
-  transactionDate: string;
+  description: string;
+  incomeCategory?: string;
+  expenseCategory?: string;
+  date: string;
+  imageUrl?: string;
   note?: string;
+  tags?: string;
   createdAt: string;
+  images: TransactionImage[];
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface CalendarDay {
+  date: string;
+  totalIncome: number;
+  totalExpense: number;
+  transactionCount: number;
+  hasImages: boolean;
+  transactions: Transaction[];
+}
+
+export interface MonthSummary {
+  totalIncome: number;
+  totalExpense: number;
+  netAmount: number;
+  transactionCount: number;
+}
+
+export interface CalendarResponse {
+  days: CalendarDay[];
+  monthSummary: MonthSummary;
+}
+
+export interface CategorySummary {
+  category: string;
+  amount: number;
+  count: number;
+  percentage: number;
+}
+
+export interface DailyTrend {
+  date: string;
+  income: number;
+  expense: number;
+}
+
+export interface Comparison {
+  incomeChangePercent: number;
+  expenseChangePercent: number;
+}
+
+export interface SummaryResponse {
+  totalIncome: number;
+  totalExpense: number;
+  netAmount: number;
+  byCategory: CategorySummary[];
+  dailyTrend: DailyTrend[];
+  topExpenses: Transaction[];
+  comparedToLastMonth: Comparison;
 }
 
 // Budget
 export interface Budget {
   id: string;
-  category: TransactionCategory;
-  limitAmount: number;
+  expenseCategory: string;
+  monthlyLimit: number;
   spentAmount: number;
   month: number;
   year: number;
+}
+
+export interface BudgetStatus {
+  id: string;
+  expenseCategory: string;
+  monthlyLimit: number;
+  spentAmount: number;
+  month: number;
+  year: number;
+  dailyAverageSpent: number;
+  projectedMonthEnd: number;
+  isOverBudget: boolean;
+  remainingAmount: number;
+  percentUsed: number;
 }
 
 // API

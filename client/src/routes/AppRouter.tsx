@@ -14,6 +14,7 @@ import FinancePage from '../features/finance/FinancePage';
 import TransactionList from '../features/finance/transactions/TransactionList';
 import CalendarView from '../features/finance/calendar/CalendarView';
 import BudgetList from '../features/finance/budgets/BudgetList';
+import SummaryView from '../features/finance/summary/SummaryView';
 import Reports from '../features/reports/Reports';
 import Profile from '../features/profile/Profile';
 
@@ -45,10 +46,11 @@ export default function AppRouter() {
           </Route>
 
           <Route path="/finance" element={<FinancePage />}>
-            <Route index element={<Navigate to="transactions" replace />} />
-            <Route path="transactions" element={<TransactionList />} />
+            <Route index element={<Navigate to="calendar" replace />} />
             <Route path="calendar" element={<CalendarView />} />
+            <Route path="transactions" element={<TransactionList />} />
             <Route path="budgets" element={<BudgetList />} />
+            <Route path="summary" element={<SummaryView />} />
           </Route>
 
           <Route path="/reports" element={<Reports />} />

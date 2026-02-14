@@ -110,8 +110,7 @@ public class AuthController : ControllerBase
     [HttpPut("profile")]
     [Consumes("multipart/form-data")]
     public async Task<ActionResult<ApiResponse<UserDto>>> UpdateProfile(
-        [FromForm] UpdateProfileDto dto,
-        [FromForm] IFormFile? avatar)
+        [FromForm] UpdateProfileDto dto)
     {
         var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var user = await _unitOfWork.Users.GetByIdAsync(userId);
@@ -119,7 +118,7 @@ public class AuthController : ControllerBase
         if (user == null)
             return NotFound(ApiResponse<UserDto>.Fail("User not found."));
 
-        await _authService.UpdateProfileAsync(user, dto.FullName, avatar);
+        await _authService.UpdateProfileAsync(user, dto.FullName, dto.Avatar);
 
         return Ok(ApiResponse<UserDto>.Ok(_mapper.Map<UserDto>(user)));
     }

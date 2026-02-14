@@ -47,4 +47,62 @@ public class TransactionRepository : Repository<Transaction>, ITransactionReposi
             .Include(t => t.Images)
             .FirstOrDefaultAsync(t => t.Id == transactionId);
     }
+
+    public async Task<(IEnumerable<Transaction> Items, int TotalCount)> GetPaginatedAsync(
+        Guid userId,
+        TransactionType? type,
+        DateTime? startDate,
+        DateTime? endDate,
+        ExpenseCategory? expenseCategory,
+        IncomeCategory? incomeCategory,
+        int page,
+        int pageSize,
+        string sortBy,
+        string order)
+    {
+        var query = _dbSet.Where(t => t.UserId == userId);
+
+        if (type.HasValue)
+            query = query.Where(t => t.Type == type.Value);
+
+        if (startDate.HasValue)
+            query = query.Where(t => t.Date >= startDate.Value);
+
+        if (endDate.HasValue)
+            query = query.Where(t => t.Date <= endDate.Value);
+
+        if (expenseCategory.HasValue)
+            query = query.Where(t => t.ExpenseCategory == expenseCategory.Value);
+
+        if (incomeCategory.HasValue)
+            query = query.Where(t => t.IncomeCategory == incomeCategory.Value);
+
+        var totalCount = await query.CountAsync();
+
+        // Apply sorting
+        query = sortBy.ToLower() switch
+        {
+            "amount" => order.ToLower() == "asc" ? query.OrderBy(t => t.Amount) : query.OrderByDescending(t => t.Amount),
+            "description" => order.ToLower() == "asc" ? query.OrderBy(t => t.Description) : query.OrderByDescending(t => t.Description),
+            _ => order.ToLower() == "asc" ? query.OrderBy(t => t.Date) : query.OrderByDescending(t => t.Date),
+        };
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Include(t => t.Images)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
+
+    public async Task<IEnumerable<Transaction>> GetByUserIdAndDateRangeWithImagesAsync(
+        Guid userId, DateTime from, DateTime to)
+    {
+        return await _dbSet
+            .Where(t => t.UserId == userId && t.Date >= from && t.Date <= to)
+            .Include(t => t.Images)
+            .OrderByDescending(t => t.Date)
+            .ToListAsync();
+    }
 }

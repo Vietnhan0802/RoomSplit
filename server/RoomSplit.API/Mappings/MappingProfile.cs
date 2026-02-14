@@ -36,10 +36,12 @@ public class MappingProfile : Profile
             .ForMember(d => d.Status, opt => opt.MapFrom(s => s.Status.ToString()));
 
         // Transaction
+        CreateMap<TransactionImage, TransactionImageDto>();
         CreateMap<Transaction, TransactionDto>()
             .ForMember(d => d.Type, opt => opt.MapFrom(s => s.Type.ToString()))
             .ForMember(d => d.IncomeCategory, opt => opt.MapFrom(s => s.IncomeCategory != null ? s.IncomeCategory.ToString() : null))
-            .ForMember(d => d.ExpenseCategory, opt => opt.MapFrom(s => s.ExpenseCategory != null ? s.ExpenseCategory.ToString() : null));
+            .ForMember(d => d.ExpenseCategory, opt => opt.MapFrom(s => s.ExpenseCategory != null ? s.ExpenseCategory.ToString() : null))
+            .ForMember(d => d.Images, opt => opt.MapFrom(s => s.Images));
 
         // Budget
         CreateMap<Budget, BudgetDto>()

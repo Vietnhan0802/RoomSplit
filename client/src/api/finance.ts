@@ -1,33 +1,79 @@
 import apiClient from './client';
-import type { ApiResponse, Transaction, Budget } from '../types';
+import type {
+  ApiResponse,
+  Transaction,
+  Budget,
+  BudgetStatus,
+  PaginatedResponse,
+  CalendarResponse,
+  SummaryResponse,
+} from '../types';
+
+export interface TransactionQueryParams {
+  type?: number;
+  startDate?: string;
+  endDate?: string;
+  category?: number;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  order?: string;
+}
 
 export const financeApi = {
-  getTransactions: (month?: number, year?: number) =>
-    apiClient.get<ApiResponse<Transaction[]>>('/transactions', {
+  // Transactions
+  getTransactions: (params: TransactionQueryParams = {}) =>
+    apiClient.get<ApiResponse<PaginatedResponse<Transaction>>>('/transactions', { params }),
+
+  getTransaction: (id: string) =>
+    apiClient.get<ApiResponse<Transaction>>(`/transactions/${id}`),
+
+  createTransaction: (data: FormData) =>
+    apiClient.post<ApiResponse<Transaction>>('/transactions', data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+
+  updateTransaction: (id: string, data: FormData) =>
+    apiClient.put<ApiResponse<Transaction>>(`/transactions/${id}`, data, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+
+  deleteTransaction: (id: string) =>
+    apiClient.delete<ApiResponse<null>>(`/transactions/${id}`),
+
+  getCalendar: (month: number, year: number) =>
+    apiClient.get<ApiResponse<CalendarResponse>>('/transactions/calendar', {
       params: { month, year },
     }),
 
-  createTransaction: (data: {
-    type: number;
-    amount: number;
-    category: number;
-    description?: string;
-    transactionDate: string;
-    note?: string;
-  }) => apiClient.post<ApiResponse<Transaction>>('/transactions', data),
+  getSummary: (month: number, year: number) =>
+    apiClient.get<ApiResponse<SummaryResponse>>('/transactions/summary', {
+      params: { month, year },
+    }),
 
-  deleteTransaction: (id: string) =>
-    apiClient.delete(`/transactions/${id}`),
-
+  // Budgets
   getBudgets: (month: number, year: number) =>
     apiClient.get<ApiResponse<Budget[]>>('/budgets', {
       params: { month, year },
     }),
 
+  getBudgetStatus: (month: number, year: number) =>
+    apiClient.get<ApiResponse<BudgetStatus[]>>('/budgets/status', {
+      params: { month, year },
+    }),
+
   createBudget: (data: {
-    category: number;
-    limitAmount: number;
+    expenseCategory: number;
+    monthlyLimit: number;
     month: number;
     year: number;
   }) => apiClient.post<ApiResponse<Budget>>('/budgets', data),
+
+  updateBudget: (id: string, data: {
+    expenseCategory: number;
+    monthlyLimit: number;
+  }) => apiClient.put<ApiResponse<Budget>>(`/budgets/${id}`, data),
+
+  deleteBudget: (id: string) =>
+    apiClient.delete<ApiResponse<null>>(`/budgets/${id}`),
 };

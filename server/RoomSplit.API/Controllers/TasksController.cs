@@ -180,13 +180,12 @@ public class TasksController : ControllerBase
     public async Task<ActionResult<ApiResponse<TaskAssignmentDto>>> CompleteAssignment(
         Guid roomId,
         Guid assignmentId,
-        [FromForm] CompleteTaskAssignmentDto dto,
-        [FromForm] IFormFile? proofImage)
+        [FromForm] CompleteTaskAssignmentDto dto)
     {
         try
         {
             var userId = GetUserId();
-            var assignment = await _taskService.CompleteAssignmentAsync(assignmentId, userId, dto.Note, proofImage);
+            var assignment = await _taskService.CompleteAssignmentAsync(assignmentId, userId, dto.Note, dto.ProofImage);
             return Ok(ApiResponse<TaskAssignmentDto>.Ok(_mapper.Map<TaskAssignmentDto>(assignment)));
         }
         catch (KeyNotFoundException ex)

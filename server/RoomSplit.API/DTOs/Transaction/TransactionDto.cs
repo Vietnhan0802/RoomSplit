@@ -11,4 +11,5 @@ public record TransactionDto(
     string? ImageUrl,
     string? Note,
     string? Tags,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    List<TransactionImageDto> Images);

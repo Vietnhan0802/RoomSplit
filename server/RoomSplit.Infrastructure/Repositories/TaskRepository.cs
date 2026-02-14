@@ -101,7 +101,7 @@ public class TaskRepository : Repository<TaskTemplate>, ITaskRepository
             .Include(a => a.AssignedTo)
             .Include(a => a.CompletedBy)
             .OrderBy(a => a.Status)
-            .ThenBy(a => a.AssignedTo!.DisplayName)
+            .ThenBy(a => a.AssignedTo!.FullName)
             .ToListAsync();
     }
 

@@ -3,43 +3,35 @@ import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, 
 import Card from '../../components/ui/Card';
 import { financeApi } from '../../api/finance';
 import { formatCurrency } from '../../utils/formatCurrency';
-import { CATEGORY_COLORS, TRANSACTION_CATEGORIES } from '../../constants';
-import type { Transaction } from '../../types';
+import { CATEGORY_COLORS, PERSONAL_EXPENSE_CATEGORIES } from '../../constants';
+import type { SummaryResponse } from '../../types';
 
 export default function Reports() {
   const now = new Date();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [data, setData] = useState<SummaryResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     financeApi
-      .getTransactions(now.getMonth() + 1, now.getFullYear())
-      .then((res) => setTransactions(res.data.data || []))
+      .getSummary(now.getMonth() + 1, now.getFullYear())
+      .then((res) => setData(res.data.data || null))
       .finally(() => setIsLoading(false));
   }, []);
 
-  const expenses = transactions.filter((t) => t.type === 'Expense');
-  const totalExpense = expenses.reduce((s, t) => s + t.amount, 0);
-  const totalIncome = transactions.filter((t) => t.type === 'Income').reduce((s, t) => s + t.amount, 0);
+  if (isLoading) return <p className="text-center text-gray-400 py-8">Đang tải...</p>;
+  if (!data) return <p className="text-center text-gray-400 py-8">Chưa có dữ liệu</p>;
 
-  const categoryData = expenses.reduce<Record<string, number>>((acc, t) => {
-    acc[t.category] = (acc[t.category] || 0) + t.amount;
-    return acc;
-  }, {});
-
-  const pieData = Object.entries(categoryData).map(([name, value]) => ({
-    name: TRANSACTION_CATEGORIES.find((c) => c.key === name)?.label || name,
-    value,
-    color: CATEGORY_COLORS[name] || '#6b7280',
+  const pieData = data.byCategory.map((cat) => ({
+    name: PERSONAL_EXPENSE_CATEGORIES.find((c) => c.key === cat.category)?.label || cat.category,
+    value: cat.amount,
+    color: CATEGORY_COLORS[cat.category] || '#6b7280',
   }));
 
   const barData = [
-    { name: 'Thu nhập', amount: totalIncome, fill: '#10b981' },
-    { name: 'Chi tiêu', amount: totalExpense, fill: '#ef4444' },
-    { name: 'Tiết kiệm', amount: Math.max(0, totalIncome - totalExpense), fill: '#3b82f6' },
+    { name: 'Thu nhập', amount: data.totalIncome, fill: '#10b981' },
+    { name: 'Chi tiêu', amount: data.totalExpense, fill: '#ef4444' },
+    { name: 'Tiết kiệm', amount: Math.max(0, data.netAmount), fill: '#3b82f6' },
   ];
-
-  if (isLoading) return <p className="text-center text-gray-400 py-8">Đang tải...</p>;
 
   return (
     <div className="space-y-6">
@@ -88,7 +80,8 @@ export default function Reports() {
           {pieData
             .sort((a, b) => b.value - a.value)
             .map((item) => {
-              const pct = totalExpense > 0 ? (item.value / totalExpense) * 100 : 0;
+              const totalExpense = data.totalExpense || 1;
+              const pct = (item.value / totalExpense) * 100;
               return (
                 <div key={item.name}>
                   <div className="flex justify-between text-sm">
