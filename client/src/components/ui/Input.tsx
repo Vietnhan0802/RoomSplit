@@ -20,12 +20,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           id={id}
           className={cn(
             'input-field',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+            error && 'border-danger-500 focus:border-danger-500 focus:ring-danger-500',
             className
           )}
           {...props}
         />
-        {error && <p className="text-xs text-red-500">{error}</p>}
+        {error && <p className="text-xs text-danger-500">{error}</p>}
       </div>
     );
   }

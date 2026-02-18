@@ -42,6 +42,12 @@ export const INCOME_CATEGORIES: { value: number; label: string; key: string; ico
   { value: 6, label: 'Khác', key: 'Other', icon: 'MoreHorizontal' },
 ];
 
+// Combined transaction categories for forms
+export const TRANSACTION_CATEGORIES = [
+  ...PERSONAL_EXPENSE_CATEGORIES,
+  ...INCOME_CATEGORIES.map((c) => ({ ...c, value: c.value + 100 })),
+];
+
 export const TASK_FREQUENCIES: { value: number; label: string; key: TaskFrequency }[] = [
   { value: 0, label: 'Hàng ngày', key: 'Daily' },
   { value: 1, label: 'Hàng tuần', key: 'Weekly' },

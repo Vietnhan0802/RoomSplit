@@ -125,7 +125,7 @@ export default function SummaryView() {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number) => formatCurrency(value)}
+                formatter={(value) => formatCurrency(Number(value))}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -162,7 +162,7 @@ export default function SummaryView() {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="date" tick={{ fontSize: 10 }} />
               <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
-              <Tooltip formatter={(value: number) => formatCurrency(value)} />
+              <Tooltip formatter={(value) => formatCurrency(Number(value))} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
               <Bar dataKey="Thu nhập" fill="#10b981" radius={[2, 2, 0, 0]} />
               <Bar dataKey="Chi tiêu" fill="#ef4444" radius={[2, 2, 0, 0]} />

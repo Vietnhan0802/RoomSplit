@@ -26,10 +26,10 @@ export default function Modal({ isOpen, onClose, title, children, className }: M
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/50 animate-fade-in" onClick={onClose} />
       <div
         className={cn(
-          'relative z-10 mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800',
+          'relative z-10 mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl animate-scale-in dark:bg-slate-800',
           className
         )}
       >

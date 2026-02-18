@@ -10,7 +10,12 @@ interface CardProps {
 export default function Card({ children, className, onClick }: CardProps) {
   return (
     <div
-      className={cn('card', onClick && 'cursor-pointer hover:shadow-md transition-shadow', className)}
+      className={cn(
+        'card',
+        onClick && 'cursor-pointer',
+        'hover:-translate-y-0.5 hover:shadow-md',
+        className
+      )}
       onClick={onClick}
     >
       {children}

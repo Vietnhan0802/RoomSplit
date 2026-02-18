@@ -12,7 +12,7 @@ export default defineConfig({
         name: 'RoomSplit - Quản lý phòng trọ',
         short_name: 'RoomSplit',
         description: 'Chia sẻ chi phí & quản lý phòng trọ',
-        theme_color: '#3b82f6',
+        theme_color: '#4f46e5',
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '/',
