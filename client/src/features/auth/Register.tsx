@@ -7,7 +7,7 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { useAuth } from '../../hooks/useAuth';
 import { authApi } from '../../api/auth';
-import { showToast } from '../../components/ui/Toast';
+import { showToast } from '../../components/ui/showToast';
 import { ROUTES } from '../../constants';
 
 const schema = z.object({
@@ -41,8 +41,9 @@ export default function Register() {
         navigate(ROUTES.DASHBOARD);
         showToast('success', 'Đăng ký thành công!');
       }
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Email đã được sử dụng';
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const message = err.response?.data?.message || 'Email đã được sử dụng';
       showToast('error', message);
     } finally {
       setIsLoading(false);

@@ -1,19 +1,8 @@
 import { useEffect, useState } from 'react';
 import { CheckCircle, XCircle, AlertCircle, X } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { toastListeners, type ToastMessage } from './showToast';
 
-export interface ToastMessage {
-  id: string;
-  type: 'success' | 'error' | 'info';
-  message: string;
-}
-
-let toastListeners: ((toast: ToastMessage) => void)[] = [];
-
-export function showToast(type: ToastMessage['type'], message: string) {
-  const toast: ToastMessage = { id: Date.now().toString(), type, message };
-  toastListeners.forEach((fn) => fn(toast));
-}
 
 const DISMISS_MS = 3000;
 
@@ -29,7 +18,8 @@ export default function ToastContainer() {
     };
     toastListeners.push(listener);
     return () => {
-      toastListeners = toastListeners.filter((fn) => fn !== listener);
+      const idx = toastListeners.indexOf(listener);
+      if (idx !== -1) toastListeners.splice(idx, 1);
     };
   }, []);
 

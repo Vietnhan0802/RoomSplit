@@ -8,7 +8,7 @@ import Input from '../../components/ui/Input';
 import RoomForm from '../../components/forms/RoomForm';
 import { CardSkeleton } from '../../components/ui/Skeleton';
 import { roomsApi } from '../../api/rooms';
-import { showToast } from '../../components/ui/Toast';
+import { showToast } from '../../components/ui/showToast';
 import type { Room } from '../../types';
 
 export default function RoomList() {

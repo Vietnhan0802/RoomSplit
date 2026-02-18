@@ -13,10 +13,19 @@ export default function ImageViewer({ images, initialIndex, isOpen, onClose }: I
   const [scale, setScale] = useState(1);
   const touchStartX = useRef(0);
 
-  useEffect(() => {
-    setCurrentIndex(initialIndex);
+  const prev = useCallback(() => {
+    setCurrentIndex((i) => (i > 0 ? i - 1 : images.length - 1));
     setScale(1);
-  }, [initialIndex, isOpen]);
+  }, [images.length]);
+
+  const next = useCallback(() => {
+    setCurrentIndex((i) => (i < images.length - 1 ? i + 1 : 0));
+    setScale(1);
+  }, [images.length]);
+
+  // Sync index when viewer opens or initialIndex changes — this is intentional
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setCurrentIndex(initialIndex); setScale(1); }, [initialIndex, isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -31,17 +40,7 @@ export default function ImageViewer({ images, initialIndex, isOpen, onClose }: I
       document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
     };
-  }, [isOpen, currentIndex]);
-
-  const prev = useCallback(() => {
-    setCurrentIndex((i) => (i > 0 ? i - 1 : images.length - 1));
-    setScale(1);
-  }, [images.length]);
-
-  const next = useCallback(() => {
-    setCurrentIndex((i) => (i < images.length - 1 ? i + 1 : 0));
-    setScale(1);
-  }, [images.length]);
+  }, [isOpen, onClose, prev, next]);
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();

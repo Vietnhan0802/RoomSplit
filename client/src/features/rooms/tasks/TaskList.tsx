@@ -8,7 +8,7 @@ import Modal from '../../../components/ui/Modal';
 import TaskForm from '../../../components/forms/TaskForm';
 import UserAvatar from '../../../components/shared/UserAvatar';
 import { roomsApi } from '../../../api/rooms';
-import { showToast } from '../../../components/ui/Toast';
+import { showToast } from '../../../components/ui/showToast';
 import { formatDate } from '../../../utils/dateHelpers';
 import type { RoomTask } from '../../../types';
 

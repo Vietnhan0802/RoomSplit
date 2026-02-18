@@ -6,7 +6,7 @@ import CategoryIcon from '../../../components/shared/CategoryIcon';
 import ImageViewer from '../../../components/shared/ImageViewer';
 import AddTransactionSheet from './AddTransactionSheet';
 import { financeApi } from '../../../api/finance';
-import { showToast } from '../../../components/ui/Toast';
+import { showToast } from '../../../components/ui/showToast';
 import { formatCurrency } from '../../../utils/formatCurrency';
 import { formatDate } from '../../../utils/dateHelpers';
 import { cn } from '../../../utils/cn';

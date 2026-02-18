@@ -32,15 +32,16 @@ export default function CalendarView() {
   const [addForDate, setAddForDate] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsLoading(true);
+    let cancelled = false;
     financeApi.getCalendar(month, year)
       .then((res) => {
-        if (res.data.data) {
+        if (!cancelled && res.data.data) {
           setCalendarDays(res.data.data.days);
         }
       })
-      .catch(() => setCalendarDays([]))
-      .finally(() => setIsLoading(false));
+      .catch(() => { if (!cancelled) setCalendarDays([]); })
+      .finally(() => { if (!cancelled) setIsLoading(false); });
+    return () => { cancelled = true; };
   }, [month, year, refreshKey]);
 
   const days = getDaysInMonth(month, year);

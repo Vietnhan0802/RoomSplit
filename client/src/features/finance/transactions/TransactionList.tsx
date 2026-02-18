@@ -5,7 +5,7 @@ import CategoryIcon from '../../../components/shared/CategoryIcon';
 import ImageViewer from '../../../components/shared/ImageViewer';
 import { financeApi, type TransactionQueryParams } from '../../../api/finance';
 import { useFinance } from '../FinanceContext';
-import { showToast } from '../../../components/ui/Toast';
+import { showToast } from '../../../components/ui/showToast';
 import { formatCurrency } from '../../../utils/formatCurrency';
 import { PERSONAL_EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../../../constants';
 import { cn } from '../../../utils/cn';

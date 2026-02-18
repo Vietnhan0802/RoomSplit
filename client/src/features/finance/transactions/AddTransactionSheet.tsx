@@ -9,7 +9,7 @@ import AmountInput from '../../../components/shared/AmountInput';
 import CategoryIcon from '../../../components/shared/CategoryIcon';
 import ImageUploadSection from '../../../components/shared/ImageUploadSection';
 import { financeApi } from '../../../api/finance';
-import { showToast } from '../../../components/ui/Toast';
+import { showToast } from '../../../components/ui/showToast';
 import { PERSONAL_EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '../../../constants';
 import { cn } from '../../../utils/cn';
 import type { Transaction, TransactionImage } from '../../../types';

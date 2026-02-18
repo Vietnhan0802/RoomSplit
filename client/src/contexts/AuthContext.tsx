@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useEffect, type ReactNode } from 'react';
 import type { User } from '../types';
 import { authApi } from '../api/auth';
@@ -25,26 +26,23 @@ export const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => !!localStorage.getItem('token'));
 
   useEffect(() => {
-    if (token) {
-      authApi
-        .getMe()
-        .then((res) => {
-          if (res.data.data) {
-            setUser(res.data.data);
-          }
-        })
-        .catch(() => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
-          setToken(null);
-        })
-        .finally(() => setIsLoading(false));
-    } else {
-      setIsLoading(false);
-    }
+    if (!token) return;
+    authApi
+      .getMe()
+      .then((res) => {
+        if (res.data.data) {
+          setUser(res.data.data);
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        setToken(null);
+      })
+      .finally(() => setIsLoading(false));
   }, [token]);
 
   const login = (newToken: string, newRefreshToken: string, newUser: User) => {

@@ -24,12 +24,13 @@ export default function SummaryView() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsLoading(true);
+    let cancelled = false;
     financeApi
       .getSummary(month, year)
-      .then((res) => setData(res.data.data || null))
-      .catch(() => setData(null))
-      .finally(() => setIsLoading(false));
+      .then((res) => { if (!cancelled) setData(res.data.data || null); })
+      .catch(() => { if (!cancelled) setData(null); })
+      .finally(() => { if (!cancelled) setIsLoading(false); });
+    return () => { cancelled = true; };
   }, [month, year, refreshKey]);
 
   if (isLoading) {

@@ -29,8 +29,7 @@ export default function Reports() {
   const [comparison, setComparison] = useState<CategoryComparisonItem[]>([]);
 
   useEffect(() => {
-    setIsLoading(true);
-
+    let cancelled = false;
     Promise.all([
       financeApi.getReportOverview(month, year).catch(() => null),
       financeApi.getCategoryBreakdown(month, year).catch(() => null),
@@ -39,13 +38,15 @@ export default function Reports() {
       financeApi.getCategoryComparison(month, year).catch(() => null),
     ])
       .then(([overviewRes, breakdownRes, trendRes, dailyRes, compRes]) => {
+        if (cancelled) return;
         setOverview(overviewRes?.data?.data || null);
         setBreakdown(breakdownRes?.data?.data || []);
         setTrend(trendRes?.data?.data || []);
         setDailySpending(dailyRes?.data?.data || null);
         setComparison(compRes?.data?.data || []);
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => { if (!cancelled) setIsLoading(false); });
+    return () => { cancelled = true; };
   }, [month, year]);
 
   const handleMonthChange = (m: number, y: number) => {

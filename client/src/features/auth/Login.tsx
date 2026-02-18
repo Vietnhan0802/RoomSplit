@@ -7,7 +7,7 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { useAuth } from '../../hooks/useAuth';
 import { authApi } from '../../api/auth';
-import { showToast } from '../../components/ui/Toast';
+import { showToast } from '../../components/ui/showToast';
 import { ROUTES } from '../../constants';
 
 const schema = z.object({
@@ -34,8 +34,9 @@ export default function Login() {
         login(res.data.data.token, res.data.data.refreshToken, res.data.data.user);
         navigate(ROUTES.DASHBOARD);
       }
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Email hoặc mật khẩu không đúng';
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const message = err.response?.data?.message || 'Email hoặc mật khẩu không đúng';
       showToast('error', message);
     } finally {
       setIsLoading(false);

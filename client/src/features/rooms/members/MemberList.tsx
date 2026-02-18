@@ -2,7 +2,7 @@ import { Copy, Crown } from 'lucide-react';
 import Card from '../../../components/ui/Card';
 import Badge from '../../../components/ui/Badge';
 import UserAvatar from '../../../components/shared/UserAvatar';
-import { showToast } from '../../../components/ui/Toast';
+import { showToast } from '../../../components/ui/showToast';
 import type { RoomDetail } from '../../../types';
 
 interface MemberListProps {

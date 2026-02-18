@@ -7,7 +7,7 @@ import ExpenseCard from '../../../components/shared/ExpenseCard';
 import ExpenseForm from '../../../components/forms/ExpenseForm';
 import { CardSkeleton } from '../../../components/ui/Skeleton';
 import { roomsApi } from '../../../api/rooms';
-import { showToast } from '../../../components/ui/Toast';
+import { showToast } from '../../../components/ui/showToast';
 import type { Expense } from '../../../types';
 
 export default function ExpenseList() {

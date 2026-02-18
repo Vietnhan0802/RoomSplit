@@ -7,7 +7,7 @@ import CategoryIcon from '../../../components/shared/CategoryIcon';
 import AmountInput from '../../../components/shared/AmountInput';
 import { financeApi } from '../../../api/finance';
 import { useFinance } from '../FinanceContext';
-import { showToast } from '../../../components/ui/Toast';
+import { showToast } from '../../../components/ui/showToast';
 import { formatCurrency } from '../../../utils/formatCurrency';
 import { PERSONAL_EXPENSE_CATEGORIES } from '../../../constants';
 import { cn } from '../../../utils/cn';
@@ -23,12 +23,13 @@ export default function BudgetList() {
   const [formLimit, setFormLimit] = useState(0);
 
   useEffect(() => {
-    setIsLoading(true);
+    let cancelled = false;
     financeApi
       .getBudgetStatus(month, year)
-      .then((res) => setBudgets(res.data.data || []))
-      .catch(() => setBudgets([]))
-      .finally(() => setIsLoading(false));
+      .then((res) => { if (!cancelled) setBudgets(res.data.data || []); })
+      .catch(() => { if (!cancelled) setBudgets([]); })
+      .finally(() => { if (!cancelled) setIsLoading(false); });
+    return () => { cancelled = true; };
   }, [month, year, refreshKey]);
 
   const openCreate = () => {

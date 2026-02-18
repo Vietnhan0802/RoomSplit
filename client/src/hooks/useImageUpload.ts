@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { filesApi } from '../api/files';
 import { compressImage, validateFile } from '../utils/fileHelpers';
-import { showToast } from '../components/ui/Toast';
+import { showToast } from '../components/ui/showToast';
 
 export function useImageUpload() {
   const [isUploading, setIsUploading] = useState(false);

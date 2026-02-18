@@ -8,21 +8,16 @@ interface BeforeInstallPromptEvent extends Event {
 export function useInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
+  const [isIOS] = useState(() => {
+    const ua = navigator.userAgent;
+    return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  });
+  const [isStandalone] = useState(() =>
+    window.matchMedia('(display-mode: standalone)').matches ||
+    (navigator as unknown as { standalone?: boolean }).standalone === true
+  );
 
   useEffect(() => {
-    // Detect if already in standalone mode
-    const standalone =
-      window.matchMedia('(display-mode: standalone)').matches ||
-      (navigator as any).standalone === true;
-    setIsStandalone(standalone);
-
-    // Detect iOS
-    const ua = navigator.userAgent;
-    const ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    setIsIOS(ios);
-
     // Listen for the install prompt
     const handler = (e: Event) => {
       e.preventDefault();

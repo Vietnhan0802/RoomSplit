@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { financeApi } from '../../api/finance';
 import type { MonthSummary } from '../../types';
@@ -25,7 +26,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const setMonthYear = useCallback((m: number, y: number) => {
     setMonth(m);
     setYear(y);
-  }, []);
+  }, [setMonth, setYear]);
 
   const triggerRefresh = useCallback(() => {
     setRefreshKey((k) => k + 1);

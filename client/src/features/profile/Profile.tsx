@@ -5,7 +5,7 @@ import { z } from 'zod';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { useAuth } from '../../hooks/useAuth';
-import { showToast } from '../../components/ui/Toast';
+import { showToast } from '../../components/ui/showToast';
 
 const schema = z.object({
   fullName: z.string().min(1, 'Vui lòng nhập họ tên').max(100),
@@ -40,8 +40,9 @@ export default function Profile() {
       await updateProfile(data.fullName, avatarFile || undefined);
       await refreshUser();
       showToast('success', 'Cập nhật hồ sơ thành công!');
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Có lỗi xảy ra';
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const message = err.response?.data?.message || 'Có lỗi xảy ra';
       showToast('error', message);
     } finally {
       setIsLoading(false);
