@@ -1,0 +1,14 @@
+services:
+  postgres:
+    ports:
+      - "5433:5432"
+
+  api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5000:8080"
+
+  client:
+    ports:
+      - "3000:80"

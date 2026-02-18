@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#4F46E5"/>
+  <g transform="translate(96, 96)" fill="none" stroke="white" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+    <!-- House -->
+    <path d="M160 40 L40 140 L40 280 L280 280 L280 140 L160 40Z" fill="none"/>
+    <!-- Roof -->
+    <path d="M20 150 L160 30 L300 150" fill="none"/>
+    <!-- Vertical split line -->
+    <line x1="160" y1="120" x2="160" y2="280"/>
+    <!-- Dollar signs -->
+    <text x="100" y="220" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="60" font-weight="700" fill="white" stroke="none">₫</text>
+    <text x="220" y="220" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="60" font-weight="700" fill="white" stroke="none">₫</text>
+  </g>
+</svg>

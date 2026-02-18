@@ -3,6 +3,8 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import AppRouter from './routes/AppRouter';
 import ToastContainer from './components/ui/Toast';
 import NetworkStatus from './components/ui/NetworkStatus';
+import InstallPWA from './components/shared/InstallPWA';
+import SWUpdatePrompt from './components/shared/SWUpdatePrompt';
 
 function App() {
   return (
@@ -11,6 +13,8 @@ function App() {
         <AppRouter />
         <ToastContainer />
         <NetworkStatus />
+        <InstallPWA />
+        <SWUpdatePrompt />
       </AuthProvider>
     </ThemeProvider>
   );
