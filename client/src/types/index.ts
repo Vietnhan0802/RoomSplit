@@ -219,6 +219,55 @@ export interface BudgetStatus {
   percentUsed: number;
 }
 
+// Reports
+export interface ReportOverview {
+  totalIncome: number;
+  totalExpense: number;
+  netSavings: number;
+  savingsPercent: number;
+  prevMonthIncome: number;
+  prevMonthExpense: number;
+  incomeChangePercent: number;
+  expenseChangePercent: number;
+  topExpenses: Transaction[];
+}
+
+export interface CategoryBreakdownItem {
+  category: string;
+  amount: number;
+  count: number;
+  percentage: number;
+  transactions: Transaction[];
+}
+
+export interface MonthlyTrendItem {
+  month: number;
+  year: number;
+  income: number;
+  expense: number;
+  savings: number;
+}
+
+export interface DailySpendingItem {
+  date: string;
+  amount: number;
+}
+
+export interface DailySpendingResponse {
+  days: DailySpendingItem[];
+  dailyAverage: number;
+  maxDay: string | null;
+  maxAmount: number;
+}
+
+export interface CategoryComparisonItem {
+  category: string;
+  prevMonthAmount: number;
+  currentMonthAmount: number;
+  amountChange: number;
+  percentChange: number;
+}
+
 // API
 export interface ApiResponse<T> {
   success: boolean;

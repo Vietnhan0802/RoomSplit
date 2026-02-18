@@ -7,6 +7,11 @@ import type {
   PaginatedResponse,
   CalendarResponse,
   SummaryResponse,
+  ReportOverview,
+  CategoryBreakdownItem,
+  MonthlyTrendItem,
+  DailySpendingResponse,
+  CategoryComparisonItem,
 } from '../types';
 
 export interface TransactionQueryParams {
@@ -76,4 +81,20 @@ export const financeApi = {
 
   deleteBudget: (id: string) =>
     apiClient.delete<ApiResponse<null>>(`/budgets/${id}`),
+
+  // Reports
+  getReportOverview: (month: number, year: number) =>
+    apiClient.get<ApiResponse<ReportOverview>>('/reports/overview', { params: { month, year } }),
+
+  getCategoryBreakdown: (month: number, year: number) =>
+    apiClient.get<ApiResponse<CategoryBreakdownItem[]>>('/reports/category-breakdown', { params: { month, year } }),
+
+  getMonthlyTrend: (months: number = 6) =>
+    apiClient.get<ApiResponse<MonthlyTrendItem[]>>('/reports/monthly-trend', { params: { months } }),
+
+  getDailySpending: (month: number, year: number) =>
+    apiClient.get<ApiResponse<DailySpendingResponse>>('/reports/daily-spending', { params: { month, year } }),
+
+  getCategoryComparison: (month: number, year: number) =>
+    apiClient.get<ApiResponse<CategoryComparisonItem[]>>('/reports/comparison', { params: { month, year } }),
 };
